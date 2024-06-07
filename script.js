@@ -13,4 +13,9 @@ function getComputerChoice() {
     }
 }
 
+function getHumanChoice() {
+    let choice = prompt("What is your choice?");
+    return choice.toLowerCase();
+}
 
+console.log(getHumanChoice());
