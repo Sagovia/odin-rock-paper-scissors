@@ -1,3 +1,14 @@
+/*
+    IDEA:
+    Add event handler to each button
+    Then make it so that, whenever any of them are clicked, it will record the one clicked as the selection (use event delegation), and also play the round
+    Then update the scoreboard within the playGame function (already done)
+    Finally, check to see if anyone's won yet. If so, remove the event listeners
+
+
+*/
+
+
 function getComputerChoice() {
     let randomNum = Math.floor((Math.random() * 3) + 1);
     switch(randomNum) {
@@ -12,78 +23,112 @@ function getComputerChoice() {
             break;
     }
 }
-
+/*
 function getHumanChoice() {
     let choice = prompt("What is your choice?");
     return choice.toLowerCase();
 }
+*/
 
 
+const optionsDiv = document.querySelector('.optionsDiv');
+const messageDiv = document.querySelector(".messageDiv");
+const playerScorePara = document.querySelector(".playerScorePara");
+const computerScorePara = document.querySelector(".computerScorePara");
 
-function playGame(){
+let humanScore = 0;
+let computerScore = 0;
 
-    function playRound(humanChoice, computerChoice) {
-        if(humanChoice === computerChoice) {
-            console.log("Tie! Try again.")
-            return;
+
+const clickEventHandler = (e) => {
+    let target = e.target;
+
+    let computerSelection = getComputerChoice();
+    let humanSelection;
+
+    switch(target.className) {
+        case 'rockDiv':
+            humanSelection = "rock";
+            break;
+        case 'paperDiv':
+            humanSelection = "paper";
+            break;
+        case 'scissorsDiv':
+            humanSelection = 'scissors';
+            break;
+    }
+
+    playRound(humanSelection, computerSelection);
+
+
+    // End the game if a player reaches 5
+    if((humanScore >= 5) || (computerScore >= 5)) {
+        if(humanScore > computerScore) {
+            messageDiv.textContent = "Congrats, you won the game!";
         }
-        let humanWon = false;
-    
-        switch(humanChoice) {
-            case "rock":
-                switch(computerChoice) {
-                    case "scissors":
-                        humanWon = true;
-                        break;
-                }
-                break;
-            case "paper":
-                switch(computerChoice) {
-                    case "rock":
-                        humanWon = true;
-                        break;
-                }
-                break;
-            case "scissors": 
-                switch(computerChoice) {
-                    case "paper": 
-                        humanWon = true;
-                        break;
-                break;
-            }
-        }
-    
-        if(humanWon) {
-            console.log(`You win! ${humanChoice} beats ${computerChoice}`);
-            humanScore++;
+        else if(humanScore < computerScore) {
+            messageDiv.textContent = "Sorry, you lost the game.";
         }
         else {
-            console.log(`You lose! ${computerChoice} beats ${humanChoice}`)
-            computerScore++;
+            // I don't think this outcome is possible with the current modified version
+            messageDiv.textContent = "The game was a tie overall!";
         }
-    }
 
-    let humanScore = 0;
-    let computerScore = 0;
-
-
-    for(i = 0; i < 5; i++) {
-        const humanSelection = getHumanChoice();
-        const computerSelection = getComputerChoice();
-        playRound(humanSelection, computerSelection);
-    }
-
-    if(humanScore > computerScore) {
-        console.log("Congrats, you won the game!");
-    }
-    else if(humanScore < computerScore) {
-        console.log("Sorry, you lost the game.");
-    }
-    else {
-        console.log("The game was a tie overall!");
+        optionsDiv.removeEventListener("click", clickEventHandler);
     }
 }
 
-playGame();
+optionsDiv.addEventListener("click", clickEventHandler)
+
+
+
+
+function playRound(humanChoice, computerChoice) {
+    if(humanChoice === computerChoice) {
+        messageDiv.textContent = `Tie! Try again.`;
+        return;
+    }
+    let humanWon = false;
+
+    switch(humanChoice) {
+        case "rock":
+            switch(computerChoice) {
+                case "scissors":
+                    humanWon = true;
+                    break;
+            }
+            break;
+        case "paper":
+            switch(computerChoice) {
+                case "rock":
+                    humanWon = true;
+                    break;
+            }
+            break;
+        case "scissors": 
+            switch(computerChoice) {
+                case "paper": 
+                    humanWon = true;
+                    break;
+            break;
+        }
+    }
+
+    if(humanWon) {
+        humanScore++;
+        messageDiv.textContent = `You win! ${humanChoice} beats ${computerChoice}`;
+        playerScorePara.textContent = `You: ${humanScore} pts`;
+    }
+    else {
+        computerScore++;
+        messageDiv.textContent = `You lose! ${computerChoice} beats ${humanChoice}`;
+        computerScorePara.textContent = `Computer: ${computerScore} pts`;
+    }
+}
+
+
+
+ 
+
 
 
